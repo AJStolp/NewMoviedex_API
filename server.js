@@ -5,16 +5,15 @@ const MOVIEDEX = require('../moviedex-api/MovieData/moviedex.json')
 const cors = require('cors')
 const helmet = require('helmet')
 
-// console.log(process.env.API_TOKEN)
+const morganSetting = process.env.NODE_ENV === 'production' ? 'tiny' : 'common'
 
 const app = express()
 
-app.use(morgan('dev'))
+app.use(morgan(morganSetting))
 app.use(helmet())
 app.use(cors())
 
 app.use(function validateBearerToken(req, res, next){
-    console.log('validate bearer token middleware')
     debugger
     const apiToken = process.env.API_TOKEN
     const authToken = req.get('Authorization')
@@ -23,6 +22,16 @@ app.use(function validateBearerToken(req, res, next){
     }
     //move to next middleware
     next()
+})
+
+app.use((error, req, res, next) => {
+    let response 
+    if(process.env.NODE_ENV === 'production'){
+        response = { error: {message: 'server error' } }
+    }else {
+        response = { error }
+    }
+    res.status(500).json(response)
 })
 
 app.get('/movies', function handleGetMovies(req, res) {
@@ -44,7 +53,7 @@ app.get('/movies', function handleGetMovies(req, res) {
 
 })
 
-PORT = 8000
+PORT = process.env.PORT || 8000
 
 app.listen(PORT, () => {
     console.log('Hello from express !')
