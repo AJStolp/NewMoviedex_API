@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
-const MOVIEDEX = require('./movieData/moviedex.json')
+const MOVIEDEX = require('./moviedata/moviedex.json')
 const cors = require('cors')
 const helmet = require('helmet')
 
